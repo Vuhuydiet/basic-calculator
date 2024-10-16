@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .error-message {
+            color: #e3342f; /* Red for error */
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Bé tập tính</h1>
+
+        <div id="notificationArea" class="mb-4 text-red-600 text-center"></div>
+
+        <form id="calculatorForm" class="space-y-6">
+            <!-- First Number -->
+            <div>
+                <label for="firstNumber" class="block text-sm font-medium text-gray-700 mb-1">Số thứ nhất</label>
+                <input type="text" id="firstNumber" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Nhập số thứ nhất">
+                <span id="firstNumberError" class="error-message hidden">Please enter a valid decimal number.</span>
+            </div>
+
+            <!-- Second Number -->
+            <div>
+                <label for="secondNumber" class="block text-sm font-medium text-gray-700 mb-1">Số thứ hai</label>
+                <input type="text" id="secondNumber" class="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Nhập số thứ hai">
+                <span id="secondNumberError" class="error-message hidden">Please enter a valid decimal number.</span>
+            </div>
+
+            <!-- Operation Selection -->
+            <div class="flex justify-around">
+                <label class="inline-flex items-center">
+                    <input type="radio" name="operation" value="add" class="form-radio text-blue-600" checked>
+                    <span class="ml-2 text-gray-600">Cộng</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="operation" value="subtract" class="form-radio text-blue-600">
+                    <span class="ml-2 text-gray-600">Trừ</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="operation" value="multiply" class="form-radio text-blue-600">
+                    <span class="ml-2 text-gray-600">Nhân</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="operation" value="divide" class="form-radio text-blue-600">
+                    <span class="ml-2 text-gray-600">Chia</span>
+                </label>
+            </div>
+
+            <!-- Result -->
+            <div>
+                <label for="result" class="block text-sm font-medium text-gray-700 mb-1">Kết quả</label>
+                <input type="text" id="result" class="mt-1 p-3 w-full border border-gray-300 rounded-lg bg-gray-100" readonly placeholder="Kết quả sẽ hiển thị ở đây">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">Tính</button>
+        </form>
+    </div>
+
+    <script>
+        const notificationArea = document.getElementById("notificationArea");
+
+        // Validate decimal on blur
+        document.getElementById("firstNumber").addEventListener("blur", validateFirstNumber);
+        document.getElementById("secondNumber").addEventListener("blur", validateSecondNumber);
+
+        function validateFirstNumber() {
+            const firstNumber = document.getElementById("firstNumber").value;
+            if (isNaN(firstNumber) || firstNumber.trim() === "") {
+                document.getElementById("firstNumberError").classList.remove("hidden");
+                return false;
+            } else {
+                document.getElementById("firstNumberError").classList.add("hidden");
+                return true;
+            }
+        }
+
+        function validateSecondNumber() {
+            const secondNumber = document.getElementById("secondNumber").value;
+            if (isNaN(secondNumber) || secondNumber.trim() === "") {
+                document.getElementById("secondNumberError").classList.remove("hidden");
+                return false;
+            } else {
+                document.getElementById("secondNumberError").classList.add("hidden");
+                return true;
+            }
+        }
+
+        document.getElementById("calculatorForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            notificationArea.textContent = ""; // Clear any previous errors
+
+            // Validate inputs
+            const isFirstValid = validateFirstNumber();
+            const isSecondValid = validateSecondNumber();
+
+            if (!isFirstValid || !isSecondValid) {
+                notificationArea.textContent = "Please enter two valid decimal numbers.";
+                return;
+            }
+
+            const firstNumber = parseFloat(document.getElementById("firstNumber").value);
+            const secondNumber = parseFloat(document.getElementById("secondNumber").value);
+            const operation = document.querySelector('input[name="operation"]:checked');
+            const resultField = document.getElementById("result");
+
+            if (!operation) {
+                notificationArea.textContent = "Please select an operation.";
+                return;
+            }
+
+            let result;
+            switch (operation.value) {
+                case "add":
+                    result = firstNumber + secondNumber;
+                    break;
+                case "subtract":
+                    result = firstNumber - secondNumber;
+                    break;
+                case "multiply":
+                    result = firstNumber * secondNumber;
+                    break;
+                case "divide":
+                    if (secondNumber === 0) {
+                        notificationArea.textContent = "Cannot divide by zero.";
+                        return;
+                    }
+                    result = firstNumber / secondNumber;
+                    break;
+            }
+
+            // Display result
+            resultField.value = result;
+        });
+    </script>
+</body>
+</html>
